@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.BlogClassMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加博客分类记录 -->
+	<insert id="addBlogClass" parameterType="blogClass">
+		insert into t_blogClass(blogClassName,blogClassDesc) values 
+		(#{blogClassName},#{blogClassDesc})
+	</insert>
+
+	<!-- 按照查询条件分页查询博客分类记录 -->
+	<select id="queryBlogClass" resultMap="blogClassMap" >
+		select t_blogClass.* from t_blogClass ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="blogClassMap" type="blogClass">
+        <id property="blogClassId" column="blogClassId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有博客分类记录 -->
+	<select id="queryBlogClassList" resultMap="blogClassMap" >
+		select t_blogClass.* from t_blogClass ${where}
+	</select>
+
+    <!-- 按照查询条件的博客分类记录数 -->
+	<select id="queryBlogClassCount" resultType="int">
+		select count(*) from t_blogClass ${where}
+	</select>
+
+	<!-- 根据主键查询某个博客分类记录 -->
+	<select id="getBlogClass" parameterType="int" resultMap="blogClassMap">
+		select * from t_blogClass where t_blogClass.blogClassId = #{blogClassId}
+	</select>
+
+	<!-- 更新博客分类记录 -->
+	<update id="updateBlogClass" parameterType="blogClass">
+		update t_blogClass set blogClassName=#{blogClassName},blogClassDesc=#{blogClassDesc} where blogClassId = #{blogClassId}
+	</update>
+
+	<!-- 删除博客分类记录 -->
+	<delete id="deleteBlogClass" parameterType="int">
+		delete from t_blogClass where blogClassId=#{blogClassId}
+	</delete>
+
+</mapper>

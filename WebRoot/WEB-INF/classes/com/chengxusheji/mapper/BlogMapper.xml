@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.BlogMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加博客记录 -->
+	<insert id="addBlog" parameterType="blog">
+		insert into t_blog(blogClassObj,title,blogPhoto,content,hitNum,userObj,addTime,shzt) values 
+		(#{blogClassObj.blogClassId},#{title},#{blogPhoto},#{content},#{hitNum},#{userObj.user_name},#{addTime},#{shzt})
+	</insert>
+
+	<!-- 按照查询条件分页查询博客记录 -->
+	<select id="queryBlog" resultMap="blogMap" >
+		select t_blog.* from t_blog,t_blogClass,t_userInfo ${where} and t_blog.blogClassObj = t_blogClass.blogClassId and t_blog.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="blogMap" type="blog">
+        <id property="blogId" column="blogId" />
+        <association property="blogClassObj" column="blogClassObj" select="com.chengxusheji.mapper.BlogClassMapper.getBlogClass" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有博客记录 -->
+	<select id="queryBlogList" resultMap="blogMap" >
+		select t_blog.* from t_blog,t_blogClass,t_userInfo ${where} and t_blog.blogClassObj = t_blogClass.blogClassId and t_blog.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的博客记录数 -->
+	<select id="queryBlogCount" resultType="int">
+		select count(*) from t_blog,t_blogClass,t_userInfo ${where} and t_blog.blogClassObj = t_blogClass.blogClassId and t_blog.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个博客记录 -->
+	<select id="getBlog" parameterType="int" resultMap="blogMap">
+		select * from t_blog where t_blog.blogId = #{blogId}
+	</select>
+
+	<!-- 更新博客记录 -->
+	<update id="updateBlog" parameterType="blog">
+		update t_blog set blogClassObj=#{blogClassObj.blogClassId},title=#{title},blogPhoto=#{blogPhoto},content=#{content},hitNum=#{hitNum},userObj=#{userObj.user_name},addTime=#{addTime},shzt=#{shzt} where blogId = #{blogId}
+	</update>
+
+	<!-- 删除博客记录 -->
+	<delete id="deleteBlog" parameterType="int">
+		delete from t_blog where blogId=#{blogId}
+	</delete>
+
+</mapper>
